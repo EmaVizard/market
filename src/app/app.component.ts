@@ -9,7 +9,65 @@ export class AppComponent {
   section = 'inico';
   categoria = '';
   productoView = false;
+  loginView = false;
   mainImg = 'one';
+  horarios = [
+    {
+      id: "1",
+      horario: "9:00-10:00",
+      jueves: "",
+      viernes: "Gratis"
+    },
+    {
+      id: "2",
+      horario: "10:00-11:00",
+      jueves: "",
+      viernes: "Gratis"
+    },
+    {
+      id: "3",
+      horario: "11:00-12:00",
+      jueves: "",
+      viernes: "Gratis"
+    },
+    {
+      id: "4",
+      horario: "12:00-13:00",
+      jueves: "Gratis",
+      viernes: "Gratis"
+    },
+    {
+      id: "5",
+      horario: "13:00-14:00",
+      jueves: "Gratis",
+      viernes: "Gratis"
+    },
+    {
+      id: "6",
+      horario: "14:00-15:00",
+      jueves: "Gratis",
+      viernes: "Gratis"
+    },
+    {
+      id: "7",
+      horario: "15:00-16:00",
+      jueves: "Gratis",
+      viernes: "Gratis"
+    },
+    {
+      id: "8",
+      horario: "16:00-17:00",
+      jueves: "Gratis",
+      viernes: "Gratis"
+    },
+    {
+      id: "9",
+      horario: "17:00-18:00",
+      jueves: "Gratis",
+      viernes: "Gratis"
+    },
+
+  ]
   productos = [
     {
       id: "1",
@@ -62,6 +120,10 @@ export class AppComponent {
   carrito = [];
   total:number = 0;
 
+  payment = false;
+  paymentStep = '1';
+  formaPago = 'entrega';
+
   switchSection(section: string){
   	switch(section){
   		case 'inicio':
@@ -104,7 +166,6 @@ export class AppComponent {
 
   setProduct(producto: any){
     this.productoView = true;
-    /*this.productoDetail.push(producto);*/
     Object.assign(this.productoDetail, producto);
     return(producto);
   }
@@ -119,16 +180,67 @@ export class AppComponent {
     for(var i=0;i<this.carrito.length;i++){
       this.producto += (this.carrito[i].price);
     }
-    console.log('producto' Number(this.total));
+    console.log('producto'Number(this.total));
   }
-  addCart(nombre, precio, image){
-    const items = {name: nombre.innerHTML, price: precio.innerHTML, img: image.src}
-    const sum = (Number(precio.innerHTML) + Number(this.total));
+  addCart(nombre, precio: number, image){
+    const parsPrice = Number(precio.innerHTML.replace(/[^0-9.-]+/g,""))
+    const items = {name: nombre.innerHTML, price: parsPrice, img: image.src}
+    const sum = (parsPrice + Number(this.total));
     this.carrito.push(items);
-    console.log('total:'sum);
+    console.log(parsPrice, precio.innerHTML);
+    console.log('total:' sum);
     this.total = sum;
   }
   showCart(vista){
     this.showCarrito = vista;
+  }
+  deleteItem(item, precio){
+    this.carrito.splice(this.carrito.indexOf(item),1);
+    this.total = this.total - precio;
+  }
+  updatePrice(precio){
+    console.log(precio)
+  }
+
+  /*---------------------LOGIN*/
+  logView(vista){
+    if(vista == 'open'){
+      this.loginView = true;
+      this.showCarrito = 'hide';
+    }else{
+      this.loginView = false;
+    }
+  }
+
+  /*---------------------------PAGO*/
+  payView(step){
+    switch(step){
+      case 'open':
+        this.payment = true;
+        break;
+      case '1':
+        this.paymentStep = 'one';
+        break;
+      case '2':
+        this.paymentStep = 'two';
+        break;
+      case '3':
+        this.paymentStep = 'three';
+        break;
+      case '4':
+        this.paymentStep = 'four';
+        break;
+      case '5':
+        this.paymentStep = 'five';
+        break;
+      case 'close':
+        this.payment = false;
+        this.paymentStep = 'open';
+        break;
+    }
+  }
+
+  selectPago(forma){
+    this.formaPago = forma;
   }
 }

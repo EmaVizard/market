@@ -1,7 +1,7 @@
 
 <div class="main-container" [ngClass]="section">
   <div (click)="showCart('open')" class="cart" ></div>
-  <div class="user"></div>
+  <div (click)="logView('open')" class="user"></div>
 
   <div id="inicio" (click)="switchSection('categorias')">
     <div class="action-env">
@@ -11,7 +11,7 @@
     </div>
   </div>
 
-  <div id="categorias" [ngClass]="{'active': section == 'categorias'} && {'blur': productoView}">
+  <div id="categorias" [ngClass]="{'active': section == 'categorias'} && {'blur': productoView || loginView}">
     <div class="card">
       <div class="head">        
         <h1 (click)="switchSection('categorias')">Departamentos</h1>
@@ -92,7 +92,7 @@
   <!--------------------------------------------------- DETALLE DE PRODUCTO -->
   <div class="producto-detail" [ngClass]="{'active': productoView}">
     <h1 #name>{{productoDetail.name}}</h1>
-    <h2 #price>${{productoDetail.price}}</h2>
+    <h2 #price>{{productoDetail.price | currency}}</h2>
     <div class="main-img">      
       <img #img src="{{productoDetail.url}}" alt="producto" [ngClass]="{'active': mainImg == 'one'}">
       <img src="{{productoDetail.alterImg}}" alt="producto" [ngClass]="{'active': mainImg == 'two'}">
@@ -110,17 +110,229 @@
   </div>
   <!--------------------------------------------------- CARRITO -->
   <div class="carrito" [ngClass]="{'active' : showCarrito == 'open'}">
-    <h1>Mi Carrito</h1>
+    <div class="head">
+      <h1>Mi Carrito</h1>      
+      <button (click)="showCart('close')">Cerrar</button>
+    </div>
     <div class="carrito-list">
-      <div class="producto" *ngFor="let producto of carrito">
+      <div class="producto" *ngFor="let producto of carrito; let i = index">
         <img src="{{producto.img}}" alt="">
         <h1>{{producto.name}}</h1>
-        <p>{{producto.price}}</p>
+        <p>{{producto.price | currency}}</p>
+        <input #cantidad type="number" [value]="1" (change)="updatePrice((producto.price * cantidad.value))">
+        <button (click)="deleteItem(i,producto.price)">Borrar</button>
       </div>
-      <h3>Total: {{total | currency}}</h3>
     </div>
     <div class="btns">
-      <button (click)="showCart('close')">Cerrar</button>
+      <h3>Total: {{total | currency}}</h3>
+      <div class="action">        
+        <button (click)="logView('open')">Entrega a Domicilio</button>
+        <button>Entrega en Tienda</button>
+      </div>
+    </div>
+  </div>
+
+  <!------------------------------------- LOGIN -->
+  <div class="login" [ngClass]="{'active' : loginView}">
+    <div class="head">
+      <h1>Login</h1>
+      <button (click)="logView('close')">Cerrar</button>
+    </div>
+
+    <div class="registro">
+      <h2>¿Ya estas registrado?</h2>
+      <div class="login-form">
+        <input type="text" placeholder="Correo">
+        <input type="password" placeholder="Contraseña">
+        <button class="btn" (click)="payView('open')">Entrar</button>
+      </div>
+    </div>
+
+    <div class="nuevo-registro">
+      <h2>¿Primera ves aquí?</h2>
+      <button class="btn">Regístrate</button>
+    </div>
+  </div>
+
+  <!------------------------------------- PAGO -->
+  <div class="payment {{paymentStep}}" [ngClass] ="{'active' : payment}">
+    <div class="progress">
+      <div class="step">
+        <div class="icon"></div>
+        <p>Registrar Pedido</p>
+      </div>
+      <div class="step">
+        <div class="icon"></div>
+        <p>Direccion</p>
+      </div>
+      <div class="step">
+        <div class="icon"></div>
+        <p>Horario</p>
+      </div>
+      <div class="step">
+        <div class="icon"></div>
+        <p>Pago</p>
+      </div>
+      <div class="step">
+        <div class="icon"></div>
+        <p>Detalle</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <!------ REGISTRO -->
+      <div class="registro">
+        <div class="content-wrapper">          
+          <div class="producto" *ngFor="let producto of carrito; let i = index">
+            <img src="{{producto.img}}" alt="">
+            <h1>{{producto.name}}</h1>
+            <p>{{producto.price | currency}}</p>
+            <input #cantidad type="number" [value]="1" (change)="updatePrice((producto.price * cantidad.value))">
+            <button (click)="deleteItem(i,producto.price)">Borrar</button>
+          </div>
+        </div>
+
+        <div class="foot">
+          <h3>Total: {{total | currency}}</h3>
+          <div class="btns">            
+            <button (click)="payView('2')" class="btn">Continuar</button>
+          </div>
+        </div>
+      </div>
+
+      <!------ DIRECCION-->
+      <div class="direccion">
+        <div class="content-wrapper">          
+          <div class="section">
+            <h2>Seleccionar Dirección</h2>
+            <div class="dir">
+              <h3>1. Bosques de Alisos 45B, Colonia Bosques de las Lomas</h3>
+              <label class="check-container">
+                <input type="checkbox">
+                <span class="checkmark"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>Nueva Dirección</h2>
+            <div class="two-col">
+              <div class="input-container">
+                <label>Nombre de Dirección*</label>
+                <input type="text" placeholder="Ej: Casa, Oficina, Escuela">
+              </div>
+              <div class="input-container">
+                <label>¿Quién Recibe?</label>
+                <input type="text">
+              </div>
+              <div class="input-container full">
+                <label>Autocompletado de Google</label>
+                <input type="text">
+              </div>
+              <div class="input-container">
+                <label>Calle*</label>
+                <input type="text" placeholder="Ej: Casa, Oficina, Escuela">
+              </div>
+              <div class="three-col">
+                <div class="input-container">
+                  <label>Núm Int.</label>
+                  <input type="text">
+                </div>
+                <div class="input-container">
+                  <label>Núm Ext.</label>
+                  <input type="text">
+                </div>
+                <div class="input-container">
+                  <label>C.P.</label>
+                  <input type="text">
+                </div>
+              </div>
+              <div class="input-container">
+                <label>Colonia*</label>
+                <input type="text">
+              </div>
+              <div class="input-container">
+                <label>Delegación o Municipio</label>
+                <input type="text">
+              </div>
+              <div class="input-container">
+                <label>Instrucciones de Entrega*</label>
+                <input type="text">
+              </div>
+            </div>
+            <div class="row">
+              <p>Dirección Principal</p>
+              <button>Guardar</button>
+            </div>
+          </div>
+        </div>
+        <div class="foot">
+          <h3>Total: {{total | currency}}</h3>
+          <div class="btns">            
+            <button (click)="payView('1')" class="btn">Atras</button>
+            <button (click)="payView('3')" class="btn">Continuar</button>
+          </div>
+        </div>
+      </div>
+
+      <!------ HORARIO-->
+      <div class="horario">
+        <div class="content-wrapper">
+          <div class="section">
+            <h2>Seleccionar Horario</h2>
+            <div class="horarios">
+              <div></div>
+              <h4>Jueves</h4>
+              <h4>Viernes</h4>
+              <div class="hour" *ngFor="let horario of horarios; let i = index">
+                <h4>{{horario.horario}}</h4>
+                <button>{{horario.jueves}}</button>
+                <button>{{horario.viernes}}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="foot">
+          <h3>Total: {{total | currency}}</h3>
+          <div class="btns">            
+            <button (click)="payView('2')" class="btn">Atras</button>
+            <button (click)="payView('4')" class="btn">Continuar</button>
+          </div>
+        </div>
+      </div>
+
+      <!------ PAGO-->
+      <div class="pago">
+        <div class="content-wrapper">
+          <div class="section">
+            <h2>Seleccionar Forma de Pago</h2>
+            <div class="options">
+              <div (click)="selectPago('entrega')" class="option" [ngClass]="{'active' : formaPago == 'entrega'}">
+                <div class="icon"></div>
+                <h3>Contra Entrega</h3>
+                <p>(Efectivo, Tarjeta y Vales de Despensa)</p>
+              </div>
+
+              <div (click)="selectPago('linea')"  class="option" [ngClass]="{'active' : formaPago == 'linea'}">
+                <div class="icon"></div>
+                <h3>En Línea</h3>
+                <p>(Tarjeta de Crédito / Débito)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="foot">
+          <h3>Total: {{total | currency}}</h3>
+          <div class="btns">            
+            <button (click)="payView('3')" class="btn">Atras</button>
+            <button (click)="payView('5')" class="btn">Continuar</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="btns">
+      <button (click)="payView('close')">Cancelar</button>
     </div>
   </div>
 </div>
