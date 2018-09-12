@@ -176,19 +176,19 @@ export class AppComponent {
   selectView(vista){
     this.mainImg = vista;
   }
-  cartTotal(){
+  /*cartTotal(){
     for(var i=0;i<this.carrito.length;i++){
       this.producto += (this.carrito[i].price);
     }
     console.log('producto'Number(this.total));
-  }
-  addCart(nombre, precio: number, image){
+  }*/
+  addCart(nombre, precio, image){
     const parsPrice = Number(precio.innerHTML.replace(/[^0-9.-]+/g,""))
     const items = {name: nombre.innerHTML, price: parsPrice, img: image.src}
     const sum = (parsPrice + Number(this.total));
     this.carrito.push(items);
     console.log(parsPrice, precio.innerHTML);
-    console.log('total:' sum);
+    /*console.log('total:' sum);*/
     this.total = sum;
   }
   showCart(vista){
@@ -230,8 +230,14 @@ export class AppComponent {
       case '4':
         this.paymentStep = 'four';
         break;
+       case 'payData':
+        this.paymentStep = 'payData';
+        break;
       case '5':
         this.paymentStep = 'five';
+        break;
+      case 'end':
+        this.paymentStep = 'last';
         break;
       case 'close':
         this.payment = false;
@@ -242,5 +248,23 @@ export class AppComponent {
 
   selectPago(forma){
     this.formaPago = forma;
+  }
+
+  finish(){
+  	this.section = 'inico';
+  	this.categoria = '';
+  	this.productoView = false;
+  	this.loginView = false;
+  	this.mainImg = 'one';
+  	this.productoDetail = {
+  	  name: '',price: '',url:''
+  	}
+  	this.showCarrito = 'hide';
+  	this.carrito = [];
+  	this.total = 0;
+
+  	this.payment = false;
+  	this.paymentStep = '1';
+  	this.formaPago = 'entrega';
   }
 }
